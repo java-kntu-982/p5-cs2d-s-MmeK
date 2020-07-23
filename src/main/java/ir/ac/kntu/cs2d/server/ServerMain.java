@@ -9,7 +9,7 @@ public class ServerMain {
         try (ServerSocket serverSocket = new ServerSocket(65000)) {
             Socket clientSocket;
             while((clientSocket = serverSocket.accept())!=null){
-                new Thread(new tcpConnection(clientSocket)).start();
+                new Thread(new ServerTcp(clientSocket)).start();
             }
         } catch (IOException exception) {
             exception.printStackTrace();

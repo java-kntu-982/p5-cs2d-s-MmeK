@@ -46,11 +46,11 @@ public class PhysicsManager {
         }
     }
 
-    public void removeColliders(int index){
+    public void removeColliders(int index) {
         collider2DList.remove(index);
     }
 
-    public List<Collider2D> lineCast(double x1, double y1, double x2, double y2, String layermask) {
+    public List<Collider2D> lineCast(double x1, double y1, double x2, double y2, List<String> layermasks) {
         List<Collider2D> hitColliders = new ArrayList<>();
         for (List<RectangleCollider2D> list : collider2DList) {
             for (Collider2D collider2D :
@@ -61,8 +61,18 @@ public class PhysicsManager {
                         ((RectangleCollider2D) collider2D).getWidth(),
                         ((RectangleCollider2D) collider2D).getHeight()
                 )) {
-                    if (layermask.hashCode() != collider2D.getLayer().hashCode())
+                    boolean tempFlag = false;
+                    for (String layer :
+                            layermasks) {
+                        if (layer.hashCode() == collider2D.getLayer().hashCode()) {
+                            tempFlag = true;
+                            break;
+                        }
+                    }
+                    if (!tempFlag) {
                         hitColliders.add(collider2D);
+
+                    }
                 }
             }
 

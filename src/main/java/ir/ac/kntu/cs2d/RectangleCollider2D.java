@@ -13,6 +13,7 @@ public class RectangleCollider2D extends Collider2D {
         this.height = height;
     }
 
+
     public double getWidth() {
         return width;
     }

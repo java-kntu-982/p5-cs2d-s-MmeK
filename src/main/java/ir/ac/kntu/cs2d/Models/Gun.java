@@ -38,45 +38,55 @@ public class Gun implements Serializable, InventoryItem {
     @Override
     public void onUsed(Vector2D playerCenter, Vector2D mousePos) {
         if (currentBullets <= 0) {
-            if (!reloading)
-                new Thread(() -> {
-                    try {
-                        reloading = true;
-                        reloadSound.play();
-                        Thread.sleep(millisToReload);
-                        currentBullets = magazineCapacity;
-                        reloading=false;
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }).start();
+            if (!reloading) {
+                reload();
+            }
             return;
         }
-        currentBullets--;
         if (canShoot) {
-            fireSound.play();
-            Vector2D extendedMousePos = Vector2D.extendVector(playerCenter, mousePos, 100);
+            shoot(playerCenter, mousePos);
 
-            canShoot = false;
-            new Thread(() -> {
-                try {
-                    Thread.sleep(millisToFireAgain);
-                    canShoot = true;
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                    canShoot = true;
-                }
-            }).start();
-            new Thread(() -> {
-                List<Collider2D> hitColliders = physicsManager.lineCast(playerCenter.x,
-                        playerCenter.y, extendedMousePos.x, extendedMousePos.y,
-                        playerLayer);
-                for (Collider2D col : hitColliders) {
-                    System.out.println(col.getGameObject().getName());
-                    if (col.getLayer().equals("enemy"))
-                        ((Player)col.getGameObject()).getHealthManager().reduceHealth(damage);
-                }
-            }).start();
         }
+    }
+
+    private void shoot(Vector2D playerCenter, Vector2D mousePos) {
+        currentBullets--;
+        fireSound.play();
+        Vector2D extendedMousePos = Vector2D.extendVector(playerCenter, mousePos, 100);
+
+        canShoot = false;
+        new Thread(() -> {
+            try {
+                Thread.sleep(millisToFireAgain);
+                canShoot = true;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                canShoot = true;
+            }
+        }).start();
+        new Thread(() -> {
+            List<Collider2D> hitColliders = physicsManager.lineCast(playerCenter.x,
+                    playerCenter.y, extendedMousePos.x, extendedMousePos.y,
+                    List.of(playerLayer,"obstacle"));
+            for (Collider2D col : hitColliders) {
+                System.out.println(col.getGameObject().getName());
+                if (col.getLayer().equals("enemy"))
+                    ((Player)col.getGameObject()).getHealthManager().reduceHealth(damage);
+            }
+        }).start();
+    }
+
+    private void reload() {
+        new Thread(() -> {
+            try {
+                reloading = true;
+                reloadSound.play();
+                Thread.sleep(millisToReload);
+                currentBullets = magazineCapacity;
+                reloading=false;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 }

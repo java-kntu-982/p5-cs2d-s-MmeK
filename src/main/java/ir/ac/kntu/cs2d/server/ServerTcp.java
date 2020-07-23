@@ -5,11 +5,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-public class tcpConnection implements Runnable {
+public class ServerTcp implements Runnable {
 
     Socket socket;
 
-    public tcpConnection(Socket sc) {
+    public ServerTcp(Socket sc) {
         this.socket = sc;
     }
 

@@ -1,21 +1,24 @@
 package ir.ac.kntu.cs2d;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import ir.ac.kntu.cs2d.Models.Gun;
 import ir.ac.kntu.cs2d.Util.Vector2D;
 import javafx.scene.image.Image;
 
 
 public class Player extends GameObject {
+    public static final double WIDTH=30,HEIGHT=35;
 
     private TeamsEnum team;
+    @JsonIgnore
     private InventoryManager inventoryManager;
     private HealthManager healthManager;
 
-    public Player(String name, GameManager gameManager, TeamsEnum team, ResourcesLoader resourcesLoader, Vector2D position, String layer) {
-        super(name, gameManager);
+    public Player(String name, GameManager gameManager, Transform transform, TeamsEnum team, ResourcesLoader resourcesLoader, Vector2D position, String layer) {
+        super(name, gameManager,transform);
         PhysicsManager physicsManager=gameManager.getPhysicsManager();
         RectangleCollider2D playerCollider = new RectangleCollider2D(this,
-                new Transform(this, position, 0), 30, 30,
+                new Transform(position, 0),WIDTH, HEIGHT,
                 null);
         playerCollider.setLayer(layer);
         this.rectangleCollider2DList.add(playerCollider);

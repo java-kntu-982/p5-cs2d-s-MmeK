@@ -2,13 +2,11 @@ package ir.ac.kntu.cs2d;
 
 import ir.ac.kntu.cs2d.Util.Vector2D;
 
-import java.util.List;
-
 public abstract class Collider2D {
 
     private boolean isTrigger = false;
     private Transform transform;
-    private Collision collision;
+    private Collision collision=null;
     private GameObject gameObject;
     private String layer = "default";
 
@@ -35,8 +33,7 @@ public abstract class Collider2D {
     }
 
     public Transform getTransform() {
-        return new Transform(getGameObject(),
-                new Vector2D(transform.getPosition().x + gameObject.getTransform().getPosition().x,
+        return new Transform(new Vector2D(transform.getPosition().x + gameObject.getTransform().getPosition().x,
                         transform.getPosition().y + gameObject.getTransform().getPosition().y),
                 transform.getRotationZ() + gameObject.getTransform().getRotationZ());
     }
@@ -53,17 +50,19 @@ public abstract class Collider2D {
         this.collision = collision;
         this.isTrigger = isTrigger;
     }
+
     public Collider2D(GameObject gameObject, Transform transform, String layer, Collision collision) {
         this.transform = transform;
         this.gameObject = gameObject;
         this.collision = collision;
         this.layer = layer;
     }
-    public Collider2D(GameObject gameObject, Transform transform, boolean isTrigger,String layer, Collision collision) {
+
+    public Collider2D(GameObject gameObject, Transform transform, boolean isTrigger, String layer, Collision collision) {
         this.transform = transform;
         this.gameObject = gameObject;
         this.collision = collision;
-        this.layer=layer;
+        this.layer = layer;
         this.isTrigger = isTrigger;
     }
 
@@ -80,6 +79,7 @@ public abstract class Collider2D {
     public String toString() {
         return "Collider2D{" +
                 ", transform=" + getTransform() +
+                ", layer="+ getLayer()+
                 '}';
     }
 }

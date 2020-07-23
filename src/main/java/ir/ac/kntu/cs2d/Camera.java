@@ -23,7 +23,7 @@ public class Camera {
 
     public void follow(GameObject centeredGameObject, Vector2D followOffset) {
         this.followedGameObject = centeredGameObject;
-        this. offsetTransform = new Transform(followedGameObject);
+        this. offsetTransform = new Transform();
         this.followOffset=followOffset;
         clipRectangle = new Rectangle(offsetTransform.getPosition().x, offsetTransform.getPosition().y, WIDTH, HEIGHT);
         isFollowing = true;

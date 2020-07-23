@@ -1,14 +1,20 @@
 package ir.ac.kntu.cs2d;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class GameObject {
     private String name;
     private Transform transform;
+    @JsonIgnore
     protected int colliderIndex;
+    @JsonIgnore
     protected GameManager gameManager;
+    @JsonIgnore
     protected List<RectangleCollider2D> rectangleCollider2DList = new ArrayList<>();
+    @JsonIgnore
     protected SpriteRenderer spriteRenderer;
 
 
@@ -24,7 +30,7 @@ public class GameObject {
         return rectangleCollider2DList;
     }
 
-    public SpriteRenderer getSpriteRenderer(){
+    public SpriteRenderer getSpriteRenderer() {
         return spriteRenderer;
     }
 
@@ -32,17 +38,16 @@ public class GameObject {
         this.transform = transform;
     }
 
-    public GameObject(String name, SpriteRenderer renderer, List<RectangleCollider2D> collider2DList) {
-        this.transform = new Transform(this);
+    public GameObject(String name, GameManager gameManager) {
+        this.transform = new Transform();
         this.name = name;
-        this.spriteRenderer=renderer;
-        this.rectangleCollider2DList = collider2DList;
+        this.gameManager=gameManager;
     }
 
-    public GameObject(String name, GameManager gameManager) {
+    public GameObject(String name, GameManager gameManager, Transform transform) {
         this.name = name;
+        this.transform=transform;
         this.gameManager = gameManager;
-        this.transform = new Transform(this);
     }
 
     public void setRectangleCollider2DList(List<RectangleCollider2D> rectangleCollider2DList) {
