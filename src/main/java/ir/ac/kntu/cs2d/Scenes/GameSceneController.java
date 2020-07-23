@@ -3,39 +3,34 @@ package ir.ac.kntu.cs2d.Scenes;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ir.ac.kntu.cs2d.*;
 import ir.ac.kntu.cs2d.Util.Vector2D;
+import ir.ac.kntu.cs2d.client.ClientTcp;
 import javafx.animation.AnimationTimer;
-import javafx.scene.ParallelCamera;
 import javafx.scene.Scene;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.net.Socket;
+import java.net.SocketException;
 
 public class GameSceneController extends SceneController {
 
+    private static final String IP = "localhost";
+    private static final int PORT = 54321;
+    private long id;
+
     ResourcesLoader resourcesLoader;
-    ParallelCamera parallelCamera;
     AnimationTimer animationTimer;
-    GraphicsContext gc;
-    List<GameObject> gameObjects = new ArrayList<>();
 
-//    Canvas canvas;
-
-    AnchorPane anchorPane;
+    ClientTcp tcpConnection;
 
     public GameSceneController() {
-
     }
 
     public GameSceneController(Stage stage) {
         super(stage);
-//        canvas = new Canvas(800, 600);
     }
 
 
@@ -43,62 +38,46 @@ public class GameSceneController extends SceneController {
     public Scene getScene() throws IOException {
         Scene scene = new Scene(root);
         this.scene = scene;
-//        scene.setOnKeyPressed(e -> System.out.println(e.getCode()));
+        Socket socket = new Socket(IP, PORT);
+        tcpConnection = new ClientTcp(socket);
 
-        initialize();
+        try {
+            initialize();
+        }catch (SocketException socketException){
+            socketException.printStackTrace();
+        }
         return scene;
     }
 
     private double speed = 25;
     private Vector2D mousePos = new Vector2D();
 
-    private void initialize() throws IOException {
+    private void initialize() throws SocketException {
+        if((id=tcpConnection.getId())==-1){
+            throw new SocketException("Unavailable ID");
+        }
         resourcesLoader = new ResourcesLoader();
 
-//        gc.setFill(Paint.valueOf("red"));
-//        gc.fillRect(0,0,1000,1000);
-
-
         ObjectMapper objectMapper = new ObjectMapper();
-
-        String carJson =
-                "{\n" +
-                        "\t\"map_name\": \"dust\",\n" + "\"width\":400,\n" +
-                        "\t\t\"height\":400," +
-                        "\t\"walls\": [{\"x\":300,\"y\":200,\"width\":12,\"height\":12}],\n" +
-                        "\t\"obstacles\": [{\"x\":300,\"y\":300,\"width\":50,\"height\":50}],\n" +
-                        "\t\"ct_spawn\": {\"x\":1,\"y\":2,\"width\":12,\"height\":12},\n" +
-                        "\t\"t_spawn\": {\"x\":1,\"y\":2,\"width\":12,\"height\":12},\n" +
-                        "\t\"bomb_site\": {\"x\":1,\"y\":2,\"width\":12,\"height\":12}\n" +
-                        "}";
-        Level level = null;
-
-        try {
-            level = objectMapper.readValue(carJson, Level.class);
-            System.out.println(level);
-            System.out.println(objectMapper.writeValueAsString(level));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Level level = tcpConnection.getLevel();
+        TeamsEnum team = tcpConnection.getTeam();
 
 
-        GameManager gameManager = new GameManager(level,new Vector2D(300,300),);
+        GameManager gameManager = new GameManager(level, new Vector2D(300, 300), );
         PhysicsManager physicsManager = gameManager.getPhysicsManager();
         Player player = gameManager.getPlayer();
         Camera camera = gameManager.getCamera();
         Pane pane = gameManager.getGamePane();
 
 
-
         gameManager.addGameObject(player);
 
-        Player enemy = new Player("enemy", gameManager, TeamsEnum.Terrorist, resourcesLoader, new Vector2D(0, 0), "enemy");
-        enemy.setTransform(new Transform(new Vector2D(200, 200), 0));
-        gameManager.addGameObject(enemy);
+//        Player enemy = new Player("enemy", gameManager, TeamsEnum.Terrorist, resourcesLoader, new Vector2D(0, 0), "enemy");
+//        enemy.setTransform(new Transform(new Vector2D(200, 200), 0));
+//        gameManager.addGameObject(enemy);
 
         camera.follow(player, new Vector2D((double) camera.getWIDTH() / 2 - player.getSpriteRenderer().getSpriteSize().x / 2,
                 (double) camera.getHEIGHT() / 2 - player.getSpriteRenderer().getSpriteSize().y / 2));
-
 
 
         Vector2D input = new Vector2D(0, 0);
@@ -149,7 +128,6 @@ public class GameSceneController extends SceneController {
         scene.setOnMouseDragged(e -> {
             rotatePlayer(player, pane, e);
         });
-
 
 
         root.getChildren().add(pane);
