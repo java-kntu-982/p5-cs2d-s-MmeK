@@ -35,6 +35,9 @@ public class GameManager {
         camera.follow(player, new Vector2D((double) camera.getWIDTH() / 2 - player.getSpriteRenderer().getSpriteSize().x / 2,
                 (double) camera.getHEIGHT() / 2 - player.getSpriteRenderer().getSpriteSize().y / 2));
         gamePane = new Pane(canvas);
+        Player enemy = new Player(2,"enemy",this,new Transform(new Vector2D(500,500),0),
+          TeamsEnum.Terrorist,resourcesLoader,new Vector2D(0,0),"enemy");
+        gameObjects.add(enemy);
         gamePane.setClip(camera.getClipRectangle());
         initializeLevel();
     }
