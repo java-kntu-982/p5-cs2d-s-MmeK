@@ -2,14 +2,12 @@ package ir.ac.kntu.cs2d.client;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import ir.ac.kntu.cs2d.JsonPacket;
-import ir.ac.kntu.cs2d.Level;
-import ir.ac.kntu.cs2d.Player;
-import ir.ac.kntu.cs2d.TeamsEnum;
+import ir.ac.kntu.cs2d.*;
 
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.Map;
 
 public class ClientTcp {
     private static final int GET_ID = 1, GET_MAP = 2, SEND_PLAYER = 3, GET_TEAM = 4;
@@ -76,7 +74,6 @@ public class ClientTcp {
             JsonPacket jP = new JsonPacket(GET_TEAM);
             String data = objectMapper.writeValueAsString(jP);
             oos.println(data);
-//            oos.printLnObject(data);
             oos.flush();
             String teamS = ois.readLine();
             TeamsEnum team = teamS.equals("Counter_Terrorist") ? TeamsEnum.Counter_Terrorist : TeamsEnum.Terrorist;
@@ -87,19 +84,21 @@ public class ClientTcp {
         return TeamsEnum.Terrorist;
     }
 
-    public void updatePlayers(Player player){
+    public Map<Long, Transform> updatePlayers(Player player){
         try {
             JsonPacket jP = new JsonPacket(SEND_PLAYER);
             jP.setPlayer(player);
+            jP.setId(getId());
             String data = objectMapper.writeValueAsString(jP);
             oos.println(data);
-//            oos.printLnObject(data);
             oos.flush();
             String players = ois.readLine();
-
+            Map<Long,Transform> positions = objectMapper.readValue(players,JsonPacket.class).getPlayerPositions();
+            return positions;
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
 }

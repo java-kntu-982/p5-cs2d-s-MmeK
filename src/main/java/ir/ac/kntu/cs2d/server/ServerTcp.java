@@ -7,8 +7,8 @@ import ir.ac.kntu.cs2d.Player;
 import ir.ac.kntu.cs2d.TeamsEnum;
 
 import java.io.*;
-import java.net.InetAddress;
 import java.net.Socket;
+import java.util.concurrent.ConcurrentMap;
 
 public class ServerTcp implements Runnable {
     private static final int GET_ID = 1, GET_MAP = 2, SEND_PLAYER = 3, GET_TEAM = 4;
@@ -50,13 +50,21 @@ public class ServerTcp implements Runnable {
                         oos.println(data);
 //                        oos.printlnObject(serverMain.getMap());
                         break;
-                    case SEND_PLAYER:
-//                        this.main.includeCharacter(var3.characterData);
-                        break;
                     case GET_TEAM:
                         team = serverMain.getTeam();
-                        System.out.println(team);
                         data = objectMapper.writeValueAsString(team);
+                        oos.println(data);
+                        break;
+                    case SEND_PLAYER:
+                        Player player = jsonPacket.getPlayer();
+                        long id = jsonPacket.getId();
+                        ConcurrentMap<Long,Player> players = serverMain.getPlayers();
+                        if(!players.containsKey(id)){
+                            players.put(id,player);
+                        }else{
+                            players.get(id).setTransform(player.getTransform());
+                        }
+                        data = objectMapper.writeValueAsString(players);
                         oos.println(data);
                         break;
                 }
