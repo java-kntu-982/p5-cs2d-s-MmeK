@@ -9,6 +9,7 @@ import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -133,10 +134,12 @@ public class GameSceneController extends SceneController {
         });
 
 
-        root.getChildren().add(pane);
+        root.getChildren().add(gameManager.getGamePane());
 
-        pane.translateXProperty().bind(camera.getClipRectangle().translateXProperty().multiply(-1));
-        pane.translateYProperty().bind(camera.getClipRectangle().translateYProperty().multiply(-1));
+
+        //
+//        pane.layoutXProperty().bind(camera.getClipRectangle().translateXProperty().multiply(-1));
+//        pane.layoutYProperty().bind(camera.getClipRectangle().translateYProperty().multiply(-1));
 
         animationTimer = new AnimationTimer() {
 

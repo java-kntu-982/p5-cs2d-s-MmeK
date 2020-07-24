@@ -18,15 +18,17 @@ public class GameManager {
     private ResourcesLoader resourcesLoader;
     private Pane gamePane;
 
-    public GameManager(Level level,Vector2D cameraSize,TeamsEnum teamsEnum,ResourcesLoader resourcesLoader, long id) {
+    public GameManager(Level level, Vector2D cameraSize, TeamsEnum teamsEnum, ResourcesLoader resourcesLoader, long id) {
         this.physicsManager = new PhysicsManager();
         this.resourcesLoader = resourcesLoader;
         Canvas canvas = new Canvas(level.getWidth(), level.getHeight());
         GraphicsContext gc = canvas.getGraphicsContext2D();
-        camera = new Camera((int)cameraSize.x,(int)cameraSize.y , canvas);
-        this.gameRenderer= new GameRenderer(gc);
-        this.level=level;
-        this.player= new Player(id,"player", this, new Transform(), teamsEnum, resourcesLoader, new Vector2D(0, 0), "player");
+        camera = new Camera((int) cameraSize.x, (int) cameraSize.y, canvas);
+        this.gameRenderer = new GameRenderer(gc);
+        this.level = level;
+        this.player = new Player(id, "player", this, new Transform(), teamsEnum, resourcesLoader, new Vector2D(0, 0), "player");
+        camera.follow(player, new Vector2D((double) camera.getWIDTH() / 2 - player.getSpriteRenderer().getSpriteSize().x / 2,
+                (double) camera.getHEIGHT() / 2 - player.getSpriteRenderer().getSpriteSize().y / 2));
         gamePane = new Pane(canvas);
         gamePane.setClip(camera.getClipRectangle());
         initializeLevel();
@@ -43,6 +45,7 @@ public class GameManager {
         }
         physicsManager.addColliders(levelWalls);
 
+
         List<RectangleCollider2D> levelObstacles = new ArrayList<>();
         for (Rectangle wall : getLevel().getObstacles()) {
             RectangleCollider2D levelColliders = new RectangleCollider2D(levelGameObject, new Transform(new Vector2D(wall.getX(),
@@ -52,9 +55,9 @@ public class GameManager {
         }
         physicsManager.addColliders(levelObstacles);
 
+        gamePane.translateXProperty().bind(camera.getClipRectangle().translateXProperty().multiply(-1));
+        gamePane.translateYProperty().bind(camera.getClipRectangle().translateYProperty().multiply(-1));
 
-        camera.follow(player, new Vector2D((double) camera.getWIDTH() / 2 - player.getSpriteRenderer().getSpriteSize().x / 2,
-                (double) camera.getHEIGHT() / 2 - player.getSpriteRenderer().getSpriteSize().y / 2));
 
     }
 
@@ -70,7 +73,7 @@ public class GameManager {
         gameObjects.remove(gameObject);
     }
 
-    public void renderGame(){
+    public void renderGame() {
         gameRenderer.drawLevel(this);
         gameRenderer.draw(this);
     }
