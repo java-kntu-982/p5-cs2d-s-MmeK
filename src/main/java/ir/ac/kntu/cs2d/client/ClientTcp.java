@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ir.ac.kntu.cs2d.JsonPacket;
 import ir.ac.kntu.cs2d.Level;
+import ir.ac.kntu.cs2d.Player;
 import ir.ac.kntu.cs2d.TeamsEnum;
 
 import java.io.*;
@@ -84,6 +85,21 @@ public class ClientTcp {
             e.printStackTrace();
         }
         return TeamsEnum.Terrorist;
+    }
+
+    public void updatePlayers(Player player){
+        try {
+            JsonPacket jP = new JsonPacket(SEND_PLAYER);
+            jP.setPlayer(player);
+            String data = objectMapper.writeValueAsString(jP);
+            oos.println(data);
+//            oos.printLnObject(data);
+            oos.flush();
+            String players = ois.readLine();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }

@@ -26,7 +26,12 @@ public class GameManager {
         camera = new Camera((int) cameraSize.x, (int) cameraSize.y, canvas);
         this.gameRenderer = new GameRenderer(gc);
         this.level = level;
-        this.player = new Player(id, "player", this, new Transform(), teamsEnum, resourcesLoader, new Vector2D(0, 0), "player");
+        Transform transform;
+        if (teamsEnum == TeamsEnum.Terrorist)
+            transform = new Transform();
+        else
+            transform = new Transform(new Vector2D(level.getWidth() - 100, level.getHeight() - 100), 0);
+        this.player = new Player(id, "player", this, transform, teamsEnum, resourcesLoader, new Vector2D(0, 0), "player");
         camera.follow(player, new Vector2D((double) camera.getWIDTH() / 2 - player.getSpriteRenderer().getSpriteSize().x / 2,
                 (double) camera.getHEIGHT() / 2 - player.getSpriteRenderer().getSpriteSize().y / 2));
         gamePane = new Pane(canvas);
