@@ -18,7 +18,7 @@ public class GameManager {
     private ResourcesLoader resourcesLoader;
     private Pane gamePane;
 
-    public GameManager(Level level,Vector2D cameraSize,TeamsEnum teamsEnum,ResourcesLoader resourcesLoader) {
+    public GameManager(Level level,Vector2D cameraSize,TeamsEnum teamsEnum,ResourcesLoader resourcesLoader, long id) {
         this.physicsManager = new PhysicsManager();
         this.resourcesLoader = resourcesLoader;
         Canvas canvas = new Canvas(level.getWidth(), level.getHeight());
@@ -26,12 +26,9 @@ public class GameManager {
         camera = new Camera((int)cameraSize.x,(int)cameraSize.y , canvas);
         this.gameRenderer= new GameRenderer(gc);
         this.level=level;
+        this.player= new Player(id,"player", this, new Transform(), teamsEnum, resourcesLoader, new Vector2D(0, 0), "player");
         gamePane = new Pane(canvas);
-        javafx.scene.shape.Rectangle rectangle = camera.getClipRectangle();
-        gamePane.setClip(rectangle);
-        gamePane.translateXProperty().bind(rectangle.translateXProperty().multiply(-1));
-        gamePane.translateYProperty().bind(rectangle.translateYProperty().multiply(-1));
-        this.player= new Player("player", this,, TeamsEnum.Counter_Terrorist, resourcesLoader, new Vector2D(0, 0), "player");
+        gamePane.setClip(camera.getClipRectangle());
         initializeLevel();
     }
 
@@ -54,6 +51,10 @@ public class GameManager {
             levelObstacles.add(levelColliders);
         }
         physicsManager.addColliders(levelObstacles);
+
+
+        camera.follow(player, new Vector2D((double) camera.getWIDTH() / 2 - player.getSpriteRenderer().getSpriteSize().x / 2,
+                (double) camera.getHEIGHT() / 2 - player.getSpriteRenderer().getSpriteSize().y / 2));
 
     }
 

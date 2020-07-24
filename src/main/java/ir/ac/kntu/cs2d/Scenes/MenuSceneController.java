@@ -31,9 +31,6 @@ public class MenuSceneController extends SceneController {
         root.getChildren().add(FXMLLoader.load(getClass().getResource(ScenesEnum.MAIN_MENU.getFXMLPath())));
         Scene scene = new Scene(root);
         this.scene = scene;
-
-        scene.setOnKeyPressed(e -> System.out.println(e.getCode()));
-
         return scene;
     }
 

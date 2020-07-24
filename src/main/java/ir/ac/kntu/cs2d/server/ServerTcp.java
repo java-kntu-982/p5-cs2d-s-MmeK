@@ -1,57 +1,70 @@
 package ir.ac.kntu.cs2d.server;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import ir.ac.kntu.cs2d.JsonPacket;
+import ir.ac.kntu.cs2d.Player;
 import ir.ac.kntu.cs2d.TeamsEnum;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 
 public class ServerTcp implements Runnable {
-    private static final int GET_ID = 1, GET_MAP = 2, SEND_PLAYER = 3, GET_TEAM=4;
+    private static final int GET_ID = 1, GET_MAP = 2, SEND_PLAYER = 3, GET_TEAM = 4;
 
     private ServerMain serverMain;
     private TeamsEnum team;
     private long id;
+    private ObjectMapper objectMapper;
     Socket socket;
 
     public ServerTcp(Socket sc, ServerMain server) {
         this.socket = sc;
-        this.serverMain=server;
+        System.out.println("Client Connected ip:" + sc.getInetAddress().toString() + " id= " + id);
+        this.objectMapper = new ObjectMapper();
+        objectMapper.configure(
+                DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        this.serverMain = server;
     }
 
     @Override
     public void run() {
-        try (ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
-             ObjectInputStream ois = new ObjectInputStream(socket.getInputStream())) {
+        try {
+            PrintWriter oos = new PrintWriter(socket.getOutputStream(), true);
+            BufferedReader ois = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-            while(true) {
-                int action = ((JsonPacket) ois.readObject()).getAction();
-                switch(action) {
+            while (!socket.isClosed()) {
+                String data = ois.readLine();
+                System.out.println(data);
+                JsonPacket jsonPacket = objectMapper.readValue(data, JsonPacket.class);
+                int action = jsonPacket.getAction();
+                switch (action) {
                     case GET_ID:
-                        id=serverMain.getId().longValue();
-                        oos.writeLong(id);
+                        id = serverMain.getId().longValue();
+                        oos.println(id);
                         break;
                     case GET_MAP:
-                        oos.writeObject(serverMain.getMap());
+                        data = objectMapper.writeValueAsString(serverMain.getMap());
+//                        System.out.println(data);
+                        oos.println(data);
+//                        oos.printlnObject(serverMain.getMap());
                         break;
                     case SEND_PLAYER:
-                        this.main.includeCharacter(var3.characterData);
+//                        this.main.includeCharacter(var3.characterData);
                         break;
                     case GET_TEAM:
                         team = serverMain.getTeam();
-                        oos.writeObject(team);
+                        System.out.println(team);
+                        data = objectMapper.writeValueAsString(team);
+                        oos.println(data);
                         break;
                 }
-
-                oos.flush();
             }
 
 
-        } catch (IOException | ClassNotFoundException exception) {
-
+        } catch (IOException exception) {
+            exception.printStackTrace();
         }
     }
 }

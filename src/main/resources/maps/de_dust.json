@@ -1,9 +1,63 @@
 {
- "map_name": "dust", "width":400,
-  "height":400,
-"walls": [{"x":300,"y":200,"width":12,"height":12}],
-"obstacles": [{"x":300,"y":300,"width":50,"height":50}],
-"ct_spawn": {"x":1,"y":2,"width":12,"height":12},
-"t_spawn": {"x":1,"y":2,"width":12,"height":12},
-  "bomb_site": { "x":1,"y":2,"width":12,"height":12}
+  "map_name": "dust",
+  "width": 5000,
+  "height": 4000,
+  "walls": [
+    {
+      "x": 300,
+      "y": 200,
+      "width": 12,
+      "height": 12
+    },
+    {
+      "x": -100,
+      "y": 0,
+      "width": 100,
+      "height": 4000
+    },
+    {
+      "x": 0,
+      "y": -100,
+      "width": 5000,
+      "height": 100
+    },
+    {
+      "x": 5000,
+      "y": 0,
+      "width": 100,
+      "height": 4000
+    },
+    {
+      "x": 0,
+      "y": 4000,
+      "width": 5000,
+      "height": 100
+    }
+  ],
+  "obstacles": [
+    {
+      "x": 300,
+      "y": 300,
+      "width": 50,
+      "height": 50
+    }
+  ],
+  "ct_spawn": {
+    "x": 1,
+    "y": 2,
+    "width": 12,
+    "height": 12
+  },
+  "t_spawn": {
+    "x": 1,
+    "y": 2,
+    "width": 12,
+    "height": 12
+  },
+  "bomb_site": {
+    "x": 1,
+    "y": 2,
+    "width": 12,
+    "height": 12
+  }
 }

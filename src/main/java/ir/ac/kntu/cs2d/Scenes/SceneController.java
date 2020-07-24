@@ -9,7 +9,7 @@ import java.io.IOException;
 public abstract class SceneController {
     public abstract Scene getScene() throws IOException;
     protected Scene scene;
-    protected Stage stage;
+    protected Stage stage=new Stage();
     protected Group root;
     public SceneController(){
 

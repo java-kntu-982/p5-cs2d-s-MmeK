@@ -17,8 +17,6 @@ import java.net.SocketException;
 
 public class GameSceneController extends SceneController {
 
-    private static final String IP = "localhost";
-    private static final int PORT = 54321;
     private long id;
 
     ResourcesLoader resourcesLoader;
@@ -31,6 +29,7 @@ public class GameSceneController extends SceneController {
 
     public GameSceneController(Stage stage) {
         super(stage);
+        this.stage=stage;
     }
 
 
@@ -38,36 +37,33 @@ public class GameSceneController extends SceneController {
     public Scene getScene() throws IOException {
         Scene scene = new Scene(root);
         this.scene = scene;
-        Socket socket = new Socket(IP, PORT);
-        tcpConnection = new ClientTcp(socket);
-
-        try {
-            initialize();
-        }catch (SocketException socketException){
-            socketException.printStackTrace();
-        }
+        initialize();
+        System.out.println("returning scene");
         return scene;
     }
 
     private double speed = 25;
     private Vector2D mousePos = new Vector2D();
 
-    private void initialize() throws SocketException {
-        if((id=tcpConnection.getId())==-1){
+    private void initialize() throws IOException {
+        tcpConnection = new ClientTcp();
+        if ((id = tcpConnection.getId()) == -1) {
             throw new SocketException("Unavailable ID");
         }
+        System.out.println(id);
         resourcesLoader = new ResourcesLoader();
 
-        ObjectMapper objectMapper = new ObjectMapper();
         Level level = tcpConnection.getLevel();
+        System.out.println(level);
         TeamsEnum team = tcpConnection.getTeam();
 
 
-        GameManager gameManager = new GameManager(level, new Vector2D(300, 300), );
+        GameManager gameManager = new GameManager(level, new Vector2D(800, 600), team, resourcesLoader, id);
         PhysicsManager physicsManager = gameManager.getPhysicsManager();
         Player player = gameManager.getPlayer();
         Camera camera = gameManager.getCamera();
         Pane pane = gameManager.getGamePane();
+
 
 
         gameManager.addGameObject(player);
@@ -76,8 +72,6 @@ public class GameSceneController extends SceneController {
 //        enemy.setTransform(new Transform(new Vector2D(200, 200), 0));
 //        gameManager.addGameObject(enemy);
 
-        camera.follow(player, new Vector2D((double) camera.getWIDTH() / 2 - player.getSpriteRenderer().getSpriteSize().x / 2,
-                (double) camera.getHEIGHT() / 2 - player.getSpriteRenderer().getSpriteSize().y / 2));
 
 
         Vector2D input = new Vector2D(0, 0);
@@ -92,7 +86,16 @@ public class GameSceneController extends SceneController {
         });
 
 
+
         scene.setOnKeyPressed(e -> {
+            if(e.getCode()==KeyCode.ESCAPE) {
+                scene.getWindow().hide();
+                try {
+                    tcpConnection.close();
+                } catch (IOException exception) {
+                    exception.printStackTrace();
+                }
+            }
             if (e.getCode() == KeyCode.S)
                 input.y = 1;
             if (e.getCode() == KeyCode.W)
@@ -131,6 +134,10 @@ public class GameSceneController extends SceneController {
 
 
         root.getChildren().add(pane);
+
+        pane.translateXProperty().bind(camera.getClipRectangle().translateXProperty().multiply(-1));
+        pane.translateYProperty().bind(camera.getClipRectangle().translateYProperty().multiply(-1));
+
         animationTimer = new AnimationTimer() {
 
             long lastUpdate = System.nanoTime();
@@ -139,8 +146,7 @@ public class GameSceneController extends SceneController {
             public void handle(long currentTimeNanoSeconds) {
                 double deltaTime = (currentTimeNanoSeconds - lastUpdate) / 1e8;
                 gameManager.renderGame();
-                camera.update();
-
+                gameManager.getCamera().update();
 
                 if (!input.equals(new Vector2D()))
                     physicsManager.move(player, input.multiplyBy(speed * deltaTime));

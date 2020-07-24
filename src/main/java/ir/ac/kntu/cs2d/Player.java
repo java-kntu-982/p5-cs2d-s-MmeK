@@ -10,12 +10,12 @@ public class Player extends GameObject {
     public static final double WIDTH=30,HEIGHT=35;
 
     private TeamsEnum team;
-    private final int id;
+    private final long id;
     @JsonIgnore
     private InventoryManager inventoryManager;
     private HealthManager healthManager;
 
-    public Player(int id,String name, GameManager gameManager, Transform transform, TeamsEnum team, ResourcesLoader resourcesLoader, Vector2D position, String layer) {
+    public Player(long id,String name, GameManager gameManager, Transform transform, TeamsEnum team, ResourcesLoader resourcesLoader, Vector2D position, String layer) {
         super(name, gameManager,transform);
         this.id = id;
         PhysicsManager physicsManager=gameManager.getPhysicsManager();

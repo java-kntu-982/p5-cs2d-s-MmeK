@@ -59,7 +59,7 @@ public class Camera {
             offsetTransform.setPosition(new Vector2D(-followOffset.x +  followedGameObject.getTransform().getPosition().x,
                    -followOffset.y+ followedGameObject.getTransform().getPosition().y));
         }
-        clipRectangle.setTranslateX(MathUtil.clamp(offsetTransform.getPosition().x, 0, canvas.getWidth() - WIDTH));
-        clipRectangle.setTranslateY(MathUtil.clamp(offsetTransform.getPosition().y, 0, canvas.getHeight() - HEIGHT));
+        clipRectangle.setLayoutX(MathUtil.clamp(offsetTransform.getPosition().x, 0, canvas.getWidth() - WIDTH));
+        clipRectangle.setLayoutY(MathUtil.clamp(offsetTransform.getPosition().y, 0, canvas.getHeight() - HEIGHT));
     }
 }
