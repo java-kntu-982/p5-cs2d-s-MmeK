@@ -46,12 +46,9 @@ public class ServerTcp implements Runnable {
                         break;
                     case GET_MAP:
                         data = objectMapper.writeValueAsString(serverMain.getMap());
-//                        System.out.println(data);
                         oos.println(data);
-//                        oos.printlnObject(serverMain.getMap());
                         break;
                     case SEND_PLAYER:
-//                        this.main.includeCharacter(var3.characterData);
                         break;
                     case GET_TEAM:
                         team = serverMain.getTeam();
